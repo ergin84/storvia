@@ -51,7 +51,8 @@ var DefaultTestOptions = server.Options{
 
 // RunDefaultServer starts a new Go routine based server using the default options
 func RunDefaultServer() *server.Server {
-	return RunServer(&DefaultTestOptions)
+	dto := DefaultTestOptions
+	return RunServer(&dto)
 }
 
 func RunRandClientPortServer() *server.Server {
@@ -75,7 +76,8 @@ func RunServer(opts *server.Options) *server.Server {
 
 func RunServerCallback(opts *server.Options, callback func(*server.Server)) *server.Server {
 	if opts == nil {
-		opts = &DefaultTestOptions
+		dto := DefaultTestOptions
+		opts = &dto
 	}
 	// Optionally override for individual debugging of tests
 	opts.NoLog = !doLog
@@ -313,7 +315,7 @@ func setupConnWithAccount(t tLogger, s *server.Server, c net.Conn, account strin
 
 func setupConnWithUserPass(t tLogger, c net.Conn, username, password string) (sendFun, expectFun) {
 	checkInfoMsg(t, c)
-	cs := fmt.Sprintf("CONNECT {\"verbose\":%v,\"pedantic\":%v,\"tls_required\":%v,\"protocol\":1,\"user\":%q,\"pass\":%q}\r\n",
+	cs := fmt.Sprintf("CONNECT {\"verbose\":%v,\"pedantic\":%v,\"tls_required\":%v,\"user\":%q,\"pass\":%q}\r\n",
 		false, false, false, username, password)
 	sendProto(t, c, cs)
 	return sendCommand(t, c), expectLefMostCommand(t, c)
